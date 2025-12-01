@@ -44,7 +44,7 @@ composer require josueisaacelias/serpapi-php-client
 Clone the repository and install dependencies:
 
 ```bash
-git clone [https://github.com/josueisaacelias/serpapi-php-client.git](https://github.com/josueisaacelias/serpapi-php-client.git)
+git clone https://github.com/josueisaacelias/serpapi-php-client.git
 cd serpapi-php-client
 composer install
 ```
