@@ -31,11 +31,13 @@ Since this package is hosted on GitHub (not yet on Packagist), add the repositor
         "url": "[https://github.com/josueisaacelias/serpapi-php-client](https://github.com/josueisaacelias/serpapi-php-client)"
     }
 ]
+```
 
 Then run:
 
 ```bash
 composer require josueisaacelias/serpapi-php-client
+```
 
 ### Option B: For Development
 
@@ -45,6 +47,8 @@ Clone the repository and install dependencies:
 git clone [https://github.com/josueisaacelias/serpapi-php-client.git](https://github.com/josueisaacelias/serpapi-php-client.git)
 cd serpapi-php-client
 composer install
+```
+
 
 ## ⚡ Quick Start
 
@@ -57,6 +61,7 @@ use SerpApi\SerpApiClient;
 
 // Initialize with your Private API Key
 $client = new SerpApiClient("YOUR_SECRET_API_KEY");
+```
 
 ### 2. Search (Any Engine)
 
@@ -78,6 +83,7 @@ try {
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
 }
+```
 
 **Example: Search Yelp for "Pizza"**
 
@@ -87,6 +93,7 @@ $results = $client->search([
     'find_desc' => 'Pizza',
     'find_loc'  => 'New York, NY'
 ]);
+```
 
 ### 3. Get Account Information
 
@@ -97,7 +104,7 @@ $account = $client->getAccount();
 
 echo "Plan ID: " . $account['plan_id'] . "\n";
 echo "Searches Left: " . $account['total_searches_left'] . "\n";
-
+```
 
 ### 4. Location API
 
@@ -110,7 +117,7 @@ $locations = $client->getLocations([
 ]);
 
 print_r($locations);
-
+```
 
 ### 5. Search Archive API
 
@@ -119,7 +126,7 @@ Retrieve a previous search result from the archive using its `search_id`.
 ```php
 $searchId = "585069bdee19ad271e9bc072"; // Example ID
 $archivedResult = $client->getArchive($searchId);
-
+```
 
 ## 🧪 Testing
 
@@ -129,7 +136,7 @@ To run the tests locally (using Mocks, so **no API credits are consumed**):
 
 ```bash
 ./vendor/bin/phpunit
-
+```
 
 ## 📜 License
 
