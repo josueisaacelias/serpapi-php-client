@@ -11,36 +11,34 @@ use SerpApi\SerpApiClient;
 
 class SerpApiClientTest extends TestCase
 {
-    public function testGetAccountReturnsData()
+    public function testSearchEngineInjection()
     {
-        // 1. PREPARAR EL ESCENARIO (ARRANGE)
-        // Creamos una respuesta falsa que simula ser SerpApi
+        // 1. Simulamos una respuesta de Yelp
         $mockBody = json_encode([
-            'account_email' => 'test@serpapi.com',
-            'plan_id' => 'free',
-            'total_searches_left' => 100
+            'search_metadata' => [
+                'status' => 'Success',
+                'engine_url' => 'https://www.yelp.com/search...'
+            ]
         ]);
 
-        // Configuramos Guzzle para que devuelva esa respuesta, y un 200 OK
         $mock = new MockHandler([
             new Response(200, [], $mockBody),
         ]);
 
         $handlerStack = HandlerStack::create($mock);
-        
-        // Creamos el cliente Guzzle con nuestro "cerebro falso"
         $mockHttpClient = new Client(['handler' => $handlerStack]);
 
-        // Inyectamos el cliente falso en NUESTRA clase
-        $serpApi = new SerpApiClient('fake_key', $mockHttpClient);
+        // 2. Instanciamos el cliente
+        $client = new SerpApiClient('fake_key', $mockHttpClient);
 
-        // 2. EJECUTAR LA ACCIÓN (ACT)
-        $account = $serpApi->getAccount();
+        // 3. Probamos la flexibilidad del array
+        $data = $client->search([
+            'engine' => 'yelp',
+            'find_desc' => 'Pizza',
+            'find_loc' => 'New York'
+        ]);
 
-        // 3. VERIFICAR RESULTADOS (ASSERT)
-        // Verificamos que nuestro código decodificó bien el JSON
-        $this->assertIsArray($account);
-        $this->assertEquals('test@serpapi.com', $account['account_email']);
-        $this->assertEquals(100, $account['total_searches_left']);
+        $this->assertIsArray($data);
+        $this->assertEquals('Success', $data['search_metadata']['status']);
     }
-}
+} 
