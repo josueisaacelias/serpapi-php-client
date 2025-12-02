@@ -1,143 +1,105 @@
-# Modern SerpApi PHP Client
+High-Performance SerpApi PHP Client
+===================================
 
-![PHP Version](https://img.shields.io/badge/php-%5E7.4%20%7C%7C%20%5E8.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+A modern, **Async-First**, PSR-compliant PHP client for [SerpApi](https://serpapi.com/).
 
-A modern, PSR-4 compliant PHP client for [SerpApi](https://serpapi.com).
+This library is a complete re-architecture of the legacy SDK, designed for high-throughput applications. It leverages **PHP 8.2+ features** and **Guzzle Promises** to execute multiple search requests concurrently, reducing total execution time from linear ($O(n)$) to the time of the slowest request ($O(1)$ approx).
 
-This library provides a clean and robust wrapper around the SerpApi REST interface, allowing you to scrape results from **Google, Bing, Baidu, Yelp, Walmart, YouTube**, and many other engines using a single, unified client.
+🚀 Key Features
+---------------
 
-> **Note:** This is an unofficial, modernized refactor of the legacy SDK, featuring Guzzle for secure HTTP requests, PSR compliance, and a simplified generic architecture.
+*   **⚡ True Concurrency:** Run 10, 50, or 100 searches simultaneously using searchBatch().
+    
+*   **🛡️ PHP 8.2 Native:** Built with readonly properties, strict types, and modern syntax for maximum safety and performance.
+    
+*   **🔌 Connection Pooling:** Optimized cURL configuration (CURLOPT\_MAXCONNECTS) to handle massive batch processing without resource exhaustion.
+    
+*   **🧠 Smart Error Handling:** Batch operations are resilient. A failure in one request (e.g., network timeout) does **not** crash the entire batch.
+    
+*   **💎 Generic Architecture:** One client (SerpApiClient) supports Google, Bing, eBay, YouTube, and all other SerpApi engines.
+    
 
-## 🚀 Features
+🛠️ Installation
+----------------
 
-* **Generic Architecture:** One client (`SerpApiClient`) for all search engines. No need to manage 20 different classes.
-* **Security First:** Uses **Guzzle HTTP Client** with full SSL/TLS verification enabled by default.
-* **Modern Standards:** PSR-4 Autoloading and PSR-12 Coding Standards.
-* **Developer Friendly:** Throws meaningful Exceptions instead of silent failures.
-* **Test Ready:** Designed with Dependency Injection to allow easy mocking in your unit tests.
+### Via Composer
 
-## 🛠️ Installation
+Add the repository to your composer.json (until published to Packagist):
 
-### Option A: Via Composer (Recommended)
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   "repositories": [      {          "type": "vcs",          "url": "[https://github.com/josueisaacelias/serpapi-php-client](https://github.com/josueisaacelias/serpapi-php-client)"      }  ]   `
 
-Since this package is hosted on GitHub (not yet on Packagist), add the repository to your `composer.json`:
+Then require the package:
 
-```json
-"repositories": [
-    {
-        "type": "vcs",
-        "url": "[https://github.com/josueisaacelias/serpapi-php-client](https://github.com/josueisaacelias/serpapi-php-client)"
-    }
-]
-```
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   composer require josueisaacelias/serpapi-php-client   `
 
-Then run:
+**Requirements:**
 
-```bash
-composer require josueisaacelias/serpapi-php-client
-```
+*   PHP ^8.2
+    
+*   ext-curl and ext-json
+    
 
-### Option B: For Development
+⚡ Quick Start
+-------------
 
-Clone the repository and install dependencies:
+### 1\. Initialize the Client
 
-```bash
-git clone https://github.com/josueisaacelias/serpapi-php-client.git
-cd serpapi-php-client
-composer install
-```
+Use the new Named Arguments syntax for clarity.
 
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   require 'vendor/autoload.php';  use SerpApi\SerpApiClient;  $client = new SerpApiClient(apiKey: "YOUR_SECRET_API_KEY");   `
 
-## ⚡ Quick Start
+### 2\. Synchronous Search (Standard)
 
-### 1. Initialize the Client
+For simple, single requests. This blocks execution until the response arrives.
 
-```php
-require 'vendor/autoload.php';
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   try {      $results = $client->search([          'engine'   => 'google',           'q'        => 'Coffee',          'location' => 'Austin, Texas'      ]);      echo $results['organic_results'][0]['title'] ?? 'No results found';  } catch (Exception $e) {      echo "Error: " . $e->getMessage();  }   `
 
-use SerpApi\SerpApiClient;
+### 3\. Asynchronous Batch Search (High Performance)
 
-// Initialize with your Private API Key
-$client = new SerpApiClient("YOUR_SECRET_API_KEY");
-```
+This is the power feature. Execute multiple searches in parallel. The client handles the complexity of Promises and non-blocking I/O internally.
 
-### 2. Search (Any Engine)
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   // Define unique IDs for your queries to easily track results  $queries = [      'coffee_usa' => ['q' => 'Coffee', 'location' => 'Austin, Texas'],      'tea_uk'     => ['q' => 'Tea',    'location' => 'London, UK'],      'tacos_mx'   => ['q' => 'Tacos',  'location' => 'Mexico City', 'hl' => 'es'],  ];  // Common parameters for all queries (merged automatically)  $defaults = ['engine' => 'google', 'num' => 10];  // 🚀 Executes all 3 requests at the same time  $batchResults = $client->searchBatch($queries, $defaults);  // Process results  foreach ($batchResults as $id => $data) {      if (isset($data['error'])) {          echo "❌ Query [$id] failed: " . $data['error'] . "\n";      } else {          echo "✅ Query [$id] returned " . count($data['organic_results']) . " results.\n";      }  }   `
 
-This client maps the [SerpApi Documentation](https://serpapi.com/search-api) parameters 1:1. You simply pass the `engine` parameter to switch between Google, Yelp, Bing, etc.
+📚 API Reference
+----------------
 
-**Example: Search Google for "Coffee"**
+### search(array $params): array
 
-```php
-try {
-    $results = $client->search([
-        'engine'   => 'google', 
-        'q'        => 'Coffee',
-        'location' => 'Austin, Texas'
-    ]);
+Executes a single standard GET request to /search.
 
-    // Access results directly as an array
-    print_r($results['organic_results']);
+### searchBatch(array $queries, array $defaults = \[\]): array
 
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
-}
-```
+Executes multiple requests concurrently.
 
-**Example: Search Yelp for "Pizza"**
+*   **$queries:** Associative array where keys are custom IDs and values are query parameters.
+    
+*   **$defaults:** Parameters applied to every query (e.g., \['engine' => 'google'\]). Specific query params override defaults.
+    
+*   **Returns:** An array keyed by your custom IDs containing either the result data or an \['error' => '...'\] array.
+    
 
-```php
-$results = $client->search([
-    'engine'    => 'yelp',
-    'find_desc' => 'Pizza',
-    'find_loc'  => 'New York, NY'
-]);
-```
+### getArchive(string $searchId): array
 
-### 3. Get Account Information
+Retrieves a specific search from the SerpApi archive using its ID.
 
-Retrieve your current plan, credits left, and usage history.
+### getLocations(array $params): array
 
-```php
-$account = $client->getAccount();
+Retrieves supported locations for geo-targeting.
 
-echo "Plan ID: " . $account['plan_id'] . "\n";
-echo "Searches Left: " . $account['total_searches_left'] . "\n";
-```
+### getAccount(): array
 
-### 4. Location API
+Retrieves account information (plan limit, usage, etc.).
 
-Get supported locations for geo-targeting.
+🧪 Testing
+----------
 
-```php
-$locations = $client->getLocations([
-    'q'     => 'Austin', 
-    'limit' => 3
-]);
+This project uses **PHPUnit 11+** with modern Attributes (#\[Test\]).
 
-print_r($locations);
-```
+To run the test suite (using Mocks, so **no API credits are consumed**):
 
-### 5. Search Archive API
+Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   ./vendor/bin/phpunit   `
 
-Retrieve a previous search result from the archive using its `search_id`.
-
-```php
-$searchId = "585069bdee19ad271e9bc072"; // Example ID
-$archivedResult = $client->getArchive($searchId);
-```
-
-## 🧪 Testing
-
-This library is built with testing in mind. It includes a PHPUnit test suite configuration.
-
-To run the tests locally (using Mocks, so **no API credits are consumed**):
-
-```bash
-./vendor/bin/phpunit
-```
-
-## 📜 License
+📜 License
+----------
 
 This project is licensed under the MIT License. 
