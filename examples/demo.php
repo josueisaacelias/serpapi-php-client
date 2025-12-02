@@ -6,20 +6,20 @@ require 'vendor/autoload.php';
 
 use SerpApi\SerpApiClient;
 
-// Tu API KEY
-$apiKey = "Paste yout Api Key Here.";
+// Paste your actual API Key here
+$apiKey = "Paste your Api Key Here.";
 
 try {
-    echo "🚀 Iniciando Pruebas Modernas (PHP 8.2+)...\n\n";
+    echo "🚀 Starting Modern Tests (PHP 8.2+)...\n\n";
 
-    // ✨ MODERNIZACIÓN 1: Named Arguments
-    // Ya no necesitas adivinar qué es el primer argumento. Se lee como inglés.
+    // ✨ MODERNIZATION 1: Named Arguments
+    // No need to guess argument order anymore. Self-documenting code.
     $client = new SerpApiClient(apiKey: $apiKey);
 
     // ---------------------------------------------------------
-    // 1. PRUEBA SINCRÓNICA
+    // 1. SYNCHRONOUS TEST
     // ---------------------------------------------------------
-    echo "--- 1. Búsqueda Single ---\n";
+    echo "--- 1. Single Search (Synchronous) ---\n";
 
     $results = $client->search([
         'engine'   => 'google',
@@ -27,46 +27,46 @@ try {
         'location' => 'Dallas, Texas'
     ]);
 
-    // ✨ MODERNIZACIÓN 2: Null Safe Operator + Null Coalescing
-    // Accedemos a arrays profundos sin miedo a "Undefined index"
-    $title = $results['organic_results'][0]['title'] ?? 'Sin título';
-    echo "✅ Resultado: $title\n\n";
+    // ✨ MODERNIZATION 2: Null Safe Operator + Null Coalescing
+    // Access deep nested arrays without fear of "Undefined index" errors
+    $title = $results['organic_results'][0]['title'] ?? 'No Title Found';
+    echo "✅ Result: $title\n\n";
 
     // ---------------------------------------------------------
-    // 2. PRUEBA ASÍNCRONA (BATCH)
+    // 2. ASYNCHRONOUS TEST (BATCH)
     // ---------------------------------------------------------
-    echo "--- 2. Búsqueda Batch (Concurrente) ---\n";
+    echo "--- 2. Batch Search (Concurrent) ---\n";
 
     $queries = [
-        'cafe'  => ['q' => 'Coffee', 'location' => 'Chicago, IL'],
-        'pizza' => ['q' => 'Pizza',  'location' => 'Detroit, MI'],
-        'tacos' => ['q' => 'Tamales',  'location' => 'Mexico City', 'hl' => 'es'], // hl=es para español
+        'cafe'  => ['q' => 'Coffee',  'location' => 'Chicago, IL'],
+        'pizza' => ['q' => 'Pizza',   'location' => 'Detroit, MI'],
+        'tacos' => ['q' => 'Tamales', 'location' => 'Mexico City', 'hl' => 'es'], // hl=es for Spanish
     ];
 
     $start = microtime(true);
     
-    // Ejecutamos el motor
+    // Execute the async engine
     $batchResults = $client->searchBatch(
         queries: $queries, 
-        defaults: ['engine' => 'google'] // Named arg para claridad
+        defaults: ['engine' => 'google'] // Named arg for clarity
     );
     
     $duration = microtime(true) - $start;
-    echo "⚡ Tiempo total: " . number_format($duration, 2) . "s\n";
+    echo "⚡ Total time: " . number_format($duration, 2) . "s\n";
 
-    // Iteramos resultados
+    // Iterate through results
     foreach ($batchResults as $id => $data) {
-        // ✨ MODERNIZACIÓN 3: Expresión MATCH
-        // Reemplaza a los if/else complejos. Es más limpio y visual.
+        // ✨ MODERNIZATION 3: MATCH Expression
+        // Replaces complex if/else chains. Cleaner and more visual.
         $statusMessage = match (true) {
             isset($data['error']) => "❌ [$id] Error: " . $data['error'],
-            isset($data['organic_results']) => "✅ [$id] Éxito: " . ($data['organic_results'][0]['title'] ?? 'N/A'),
-            default => "⚠️ [$id] Respuesta desconocida"
+            isset($data['organic_results']) => "✅ [$id] Success: " . ($data['organic_results'][0]['title'] ?? 'N/A'),
+            default => "⚠️ [$id] Unknown response format"
         };
 
         echo $statusMessage . "\n";
     }
 
 } catch (Exception $e) {
-    echo "🚨 Excepción Capturada: " . $e->getMessage() . "\n";
-} 
+    echo "🚨 Exception Caught: " . $e->getMessage() . "\n";
+}
