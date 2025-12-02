@@ -27,7 +27,7 @@ Add the repository to your `composer.json` (until published to Packagist):
 "repositories": [
     {
         "type": "vcs",
-        "url": "[https://github.com/josueisaacelias/serpapi-php-client](https://github.com/josueisaacelias/serpapi-php-client)"
+        "url": "https://github.com/josueisaacelias/serpapi-php-client"
     }
 ]
 ```
